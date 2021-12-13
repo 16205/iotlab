@@ -68,10 +68,8 @@ const lmic_pinmap lmic_pins = {
 };
 
 //GPS settings 
-static const int RXPin = 4, TXPin = 3;
-static const int GPSBaud = 9600;
 TinyGPSPlus gps;
-
+static const int TXPin = 1, RXPin = 0;
 
 void onEvent (ev_t ev) {
     Serial.print(os_getTime());
@@ -204,8 +202,9 @@ void do_send(osjob_t* j){
          int count = countCar();
          payload[0] = highByte(count);
          payload[1] = lowByte(count);
-         int latitude = 50.456734*pow(10,6);
-         int longitude = 4.456789*pow(10,6);
+         float coord [] = coordGPS();
+         int latitude = coord[0]*pow(10,6);
+         int longitude = coord[1]*pow(10,6);
          payload[2] = latitude >> 24;
          payload[3] = latitude >> 16;
          payload[4] = latitude >> 8;
@@ -231,6 +230,8 @@ void setup() {
     
     // Start job (sending automatically starts OTAA too)
     do_send(&sendjob);
+
+    
 }
 
 void loop() {
@@ -262,4 +263,26 @@ static int countCar(){
          Serial.println(count);
          Serial.println();
          return count;
+}
+
+static void getGPS()
+{
+  while (Serial1.available() > 0)
+  Serial.println(Serial1.available());
+    if (gps.encode(Serial1.read()) && gps.location.isValid()){
+      //float location[] = {gps.location.lat(), gps.location.lng()};
+      //Serial.println(location[0]);
+      }
+  if (millis() > 5000 && gps.charsProcessed() < 10)
+  {
+    Serial.println(F("No GPS detected: check wiring."));
+    }
+  }
+
+static float [] coordGPS(){
+   float [] coord = {0.0,0.0};
+   if(gps.location.isValid()){
+     coord = {gps.location.lat(), gps.location.lat()};
+   }
+   return coord;
 }
