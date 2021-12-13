@@ -67,6 +67,12 @@ const lmic_pinmap lmic_pins = {
     .spi_freq = 8000000,
 };
 
+//GPS settings 
+static const int RXPin = 4, TXPin = 3;
+static const int GPSBaud = 9600;
+TinyGPSPlus gps;
+
+
 void onEvent (ev_t ev) {
     Serial.print(os_getTime());
     Serial.print(": ");
@@ -195,24 +201,7 @@ void do_send(osjob_t* j){
     if (LMIC.opmode & OP_TXRXPEND) {
         Serial.println(F("OP_TXRXPEND, not sending"));
     } else {
-         int time1 = millis();
-         int time2 = millis();
-         int count = 0;
-         while(time2 < time1 + 10000){
-            int val_IR = analogRead(A2);
-            Serial.print("Val IR : ");
-            Serial.println(val_IR);
-            if(val_IR <= 500){
-              count = count + 1;
-              Serial.print("incre count : ");
-              Serial.println(count);
-            }
-            time2 = millis();
-            delay(100);
-         }
-         Serial.print("count : ");
-         Serial.println(count);
-         Serial.println();
+         int count = countCar();
          payload[0] = highByte(count);
          payload[1] = lowByte(count);
          int latitude = 50.456734*pow(10,6);
@@ -251,4 +240,26 @@ void loop() {
   // but beware that LoRaWAN timing is pretty tight, so if you do more than a few milliseconds of work, you
   // will want to call `os_runloop_once()` every so often, to keep the radio running.
   os_runloop_once();
+}
+
+static int countCar(){
+         int time1 = millis();
+         int time2 = millis();
+         int count = 0;
+         while(time2 < time1 + 10000){
+            int val_IR = analogRead(A2);
+            Serial.print("Val IR : ");
+            Serial.println(val_IR);
+            if(val_IR <= 500){
+              count = count + 1;
+              Serial.print("incre count : ");
+              Serial.println(count);
+            }
+            time2 = millis();
+            delay(100);
+         }
+         Serial.print("count : ");
+         Serial.println(count);
+         Serial.println();
+         return count;
 }
