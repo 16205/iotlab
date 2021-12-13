@@ -20,18 +20,18 @@ void setup()
 
 void loop()
 {
-  // This sketch displays information every time a new sentence is correctly encoded.
   getGPS();
+  displayInfo();
 }
 
-void getGPS()
+static void getGPS()
 {
   while (Serial1.available() > 0)
   Serial.println(Serial1.available());
     if (gps.encode(Serial1.read()) && gps.location.isValid()){
       //float location[] = {gps.location.lat(), gps.location.lng()};
       //Serial.println(location[0]);
-      displayInfo();
+      //displayInfo();
       }
   if (millis() > 5000 && gps.charsProcessed() < 10)
   {
@@ -39,7 +39,7 @@ void getGPS()
     }
   }
 
-void displayInfo()
+static void displayInfo()
 {
   if (gps.location.isValid())
   {
