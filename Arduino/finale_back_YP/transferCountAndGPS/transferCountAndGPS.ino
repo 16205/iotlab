@@ -202,9 +202,8 @@ void do_send(osjob_t* j){
          int count = countCar();
          payload[0] = highByte(count);
          payload[1] = lowByte(count);
-         float coord [] = coordGPS();
-         int latitude = coord[0]*pow(10,6);
-         int longitude = coord[1]*pow(10,6);
+         int latitude = getLatitude()*pow(10,6);
+         int longitude = getLongitude()*pow(10,6);
          payload[2] = latitude >> 24;
          payload[3] = latitude >> 16;
          payload[4] = latitude >> 8;
@@ -279,10 +278,18 @@ static void getGPS()
     }
   }
 
-static float [] coordGPS(){
-   float [] coord = {0.0,0.0};
-   if(gps.location.isValid()){
-     coord = {gps.location.lat(), gps.location.lat()};
-   }
-   return coord;
+static float getLatitude(){
+  float latitude = 0.0;
+  if(gps.location.isValid()){
+    latitude = gps.location.lat();
+  }
+  return latitude;
+}
+
+static float getLongitude(){
+  float longitude = 0.0;
+  if(gps.location.isValid()){
+    longitude = gps.location.lng();
+  }
+  return longitude;
 }
