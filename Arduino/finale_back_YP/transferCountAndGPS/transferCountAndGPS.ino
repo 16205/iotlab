@@ -217,6 +217,11 @@ void do_send(osjob_t* j){
          payload[1] = lowByte(count);
          int latitude = 50.456734*pow(10,6);
          int longitude = 4.456789*pow(10,6);
+         payload[2] = latitude >> 24;
+         payload[3] = latitude >> 16;
+         payload[4] = latitude >> 8;
+         payload[5] = latitude;
+         //payload[2,3,4,5] = {b1, b2, b3, b4};
          LMIC_setTxData2(1, (xref2u1_t)&payload, sizeof(payload), 0);
     }
     // Next TX is scheduled after TX_COMPLETE event.
